@@ -1,0 +1,55 @@
+We need to use a conditional GAN to create a class. The generator will need the
+ability to create a path. To create a path we have to consider how this path
+can follow specified attributes. This time we will actually be using the
+conditional GANs. At each episode we need to collect an entire path. This path
+will be a sequence of states and actions. 
+
+This system will need to be a generator architecture that generates videos as
+before. How will the videos be created? An episode will be collected and then
+frames will be sampled such that the video of the path is first divided into
+clips such that there are more clips closer to the current timestep and less
+closer towards the end. 
+
+Alternatively, we can use the design with less trouble, saving this other idea
+for later. 
+
+The objective is then to collect an entire path. Same with the above idea, to
+predict a path, we will sample from the path  by dividing the path into bins,
+since it is very difficult to generate very long sequences. We can try making
+longer videos later.  There will be more bins closer to the current timestep and
+fewer towards the end. We will then sample from each bin uniformly.  The current
+design so far is: 
+
+Task -> G -> P
+
+Each path will be stored with its goal information 
+
+The goal information is dependent on the last state of the path
+
+What we need to do is take the position of the last state on the path and use
+that state as the goal information 
+
+
+Now, we will use an adversarial loss function for each attribute. Now we have
+the following system: 
+AD = Decodes Actions from current state and the desired path
+A = Action
+Task -> G ->  P ->    D
+|             |       ^
+|             ------- | ----> AD -> A
+|                     |
+|                     |
+-----------------------
+
+Tasks to complete are: 
+    - Create generator that maps from a Task in R^k to a Path of R^1 X R^A X R^B
+      where  A and B are the dimensionality  of the state and action space,
+      respectively.
+    - Create a discriminator that takes in a path, a task, and outputs a
+      validity score in R^T where T is the dimensionality of the given task.
+    - Create an Action Decoder which takes in a Task, a path, and a given state
+      action pair and the next step in the predicted path, we need to find the
+      action which takes us from one step in the path to the next.
+
+
+This 
